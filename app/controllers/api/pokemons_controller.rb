@@ -30,14 +30,11 @@ class Api::PokemonsController < ApplicationController
         response = Net::HTTP.get(url)
         pokemon_data = JSON.parse(response)
         
-        # 名前を日本語に変換。pokemon_data["results"]でAPIから返されたデータを取得。
-        pokemon_data["results"].each do |pokemon|
-            # 英語で取得したデータを日本語へ変換する
-            pokemon_data["name"] = translate_pokemon_name(pokemon_data["name"])
-        end
+        # 英語で取得したデータを日本語へ変換する
+        pokemon_data["name"] = translate_pokemon_name(pokemon_data["name"])
 
         # 変換後のデータをJSON形式で返す。
-        render json: { results: pokemon_data["results"] }
+        render json: pokemon_data
     end
   
     private

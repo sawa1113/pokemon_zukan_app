@@ -1,40 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; //react-router-domを使って、ページを切り替えられるようにする
+import PokemonList from "./components/PokemonList"; // PokemonListという画面を使うために読み込む
+import PokemonDetail from "./components/PokemonDetail"; //PokemonDetailという画面を使うために読み込む
 
-// Appという関数コンポーネント(画面の部品)を定義しています。
 function App() {
-  // データの一覧を管理するpokemonという変数と、その状態を更新するためのsetpokemonを定義しています。
-  // []はpokemonの初期値を空の配列(データがない状態)に設定しています。
-  const [pokemon, setPokemon] = useState([]);
-
-  // useEffect は、ページが読み込まれたときに1回だけ実行される。
-  useEffect(() => {
-    // fetch関数で指定したURLへアクセスし、データを取得する
-    fetch('http://localhost:3000/api/pokemons')
-      // APIから返されたデータをJSON形式に変換
-      .then(pokemon_data => pokemon_data.json())
-      // APIのレスポンスの内容(data.results)を変数pokemonにセット、データが存在しない場合はから配列にする
-      .then(data => {
-        setPokemon(data.results || []);
-      })
-      // エラーが出た際にはコンソール上に出力する
-      .catch(error => console.error(error));
-  }, []);
-  
   return (
-    <div className="App">
-      <div>
-        <h1>ポケモン図鑑 データリスト</h1>
-        <ul>
-          {pokemon.map((pokemonItem) => {
-            // URLをsplit("/")で"/"で区切り、slice(-2, -1)でidを取得。配列でデータが取得されるので、[0]で最初の要素を取得するß
-            const id = pokemonItem.url.split("/").slice(-2, -1)[0];
-            
-            return<li key={id}>{pokemonItem.name}</li>})}
-        </ul>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        {/* path="/"にきたら、PokemonListコンポーネントを表示する(一覧画面を表示する) */}
+        <Route path="/" element={<PokemonList />} />
+        {/* path="/pokemon/:id"にきたら、PokemonDetailコンポーネントを表示する(詳細画面を表示する) */}
+        <Route path="/pokemon/:id" element={<PokemonDetail />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+// 他の場所でも使えるようにする

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { data, Link } from "react-router-dom";
 
 // PokemonListという関数コンポーネント(画面の部品)を定義しています。
 function PokemonList() {
@@ -15,6 +15,7 @@ function PokemonList() {
       .then(pokemon_data => pokemon_data.json())
       // APIのレスポンスの内容(data.results)を変数pokemonにセット、データが存在しない場合はから配列にする
       .then(data => {
+        console.log(data)
         setPokemon(data.results || []);
       })
       // エラーが出た際にはコンソール上に出力する

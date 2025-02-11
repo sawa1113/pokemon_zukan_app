@@ -9,8 +9,14 @@ class Api::PokemonsController < ApplicationController
     POKEMON_NAMES = JSON.parse(File.read(Rails.root.join('config', 'pokemon.json')))
   
     def index
+        # 1ページあたりの件数を10件に設定する
+        per_page = 10
+        # PokeAPIはoffsetでページネーションを管理するために計算
+        page = params[:page].to_i > 0 ? params[:page].to_i : 1
+        offset = (page - 1) * per_page
+
         # APIからデータを取得
-        url = URI("https://pokeapi.co/api/v2/pokemon?limit=10")
+        url = URI("https://pokeapi.co/api/v2/pokemon?limit=#{per_page}&offset=#{offset}")
         response = Net::HTTP.get(url)
         pokemon_data = JSON.parse(response)
 
@@ -20,8 +26,20 @@ class Api::PokemonsController < ApplicationController
             pokemon["name"] = translate_pokemon_name(pokemon["name"])
         end
 
+        # 総ポケモン数を取得(ページネーションに利用するため)
+        total_count = pokemon_data["count"]
+        total_pages = (total_count.to_f / per_page).ceil
+
         # 変換後のデータをJSON形式で返す。
-        render json: { results: pokemon_data["results"] }
+        render json: {
+            results: pokemon_data["results"],
+            meta: {
+                current_page: page,
+                total_pages: total_pages,
+                next_page: page < total_pages ? page + 1 : nil,
+                prev_page: page > 1 ? page - 1 : nil
+            }
+        }
     end
   
     def show
